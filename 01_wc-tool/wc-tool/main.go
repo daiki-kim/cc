@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"flag"
 	"fmt"
@@ -10,9 +11,10 @@ import (
 )
 
 func main() {
-	var flagByte, flagLine bool
+	var flagByte, flagLine, flagWord bool
 	flag.BoolVar(&flagByte, "c", false, "print byte count of file contents")
 	flag.BoolVar(&flagLine, "l", false, "print line count of file contents")
+	flag.BoolVar(&flagWord, "w", false, "print word count of file contents")
 	flag.Parse()
 
 	fName := flag.Arg(0)
@@ -50,5 +52,16 @@ func main() {
 		}
 		file.Seek(0, 0)
 		fmt.Println(lCnt)
+	}
+
+	if flagWord {
+		wCnt := 0
+		scanner := bufio.NewScanner(file)
+		scanner.Split(bufio.ScanWords)
+		for scanner.Scan() {
+			wCnt++
+		}
+		file.Seek(0, 0)
+		fmt.Println(wCnt)
 	}
 }
