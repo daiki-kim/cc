@@ -12,10 +12,10 @@ import (
 
 func main() {
 	var flagByte, flagLine, flagWord, flagChar bool
-	flag.BoolVar(&flagByte, "b", false, "print byte count of file contents")
+	flag.BoolVar(&flagByte, "c", false, "print byte count of file contents")
 	flag.BoolVar(&flagLine, "l", false, "print line count of file contents")
 	flag.BoolVar(&flagWord, "w", false, "print word count of file contents")
-	flag.BoolVar(&flagChar, "c", false, "print character count of file contents")
+	flag.BoolVar(&flagChar, "m", false, "print character count of file contents")
 	flag.Parse()
 
 	fName := flag.Arg(0)
@@ -27,16 +27,16 @@ func main() {
 		log.Fatalln("failed to open file:", err)
 	}
 
-	if flagByte {
+	if flagByte || flag.NFlag() == 0 {
 		fBytes, err := io.ReadAll(file)
 		if err != nil {
 			log.Fatalln("failed to read file:", err)
 		}
 		file.Seek(0, 0)
-		fmt.Println(len(fBytes))
+		fmt.Printf("byte >> %d\n", len(fBytes))
 	}
 
-	if flagLine {
+	if flagLine || flag.NFlag() == 0 {
 		buf := make([]byte, 32*1024)
 		lCnt := 0
 		lSep := []byte{'\n'}
@@ -52,10 +52,10 @@ func main() {
 			}
 		}
 		file.Seek(0, 0)
-		fmt.Println(lCnt)
+		fmt.Printf("line >> %d\n", lCnt)
 	}
 
-	if flagWord {
+	if flagWord || flag.NFlag() == 0 {
 		wCnt := 0
 		scanner := bufio.NewScanner(file)
 		scanner.Split(bufio.ScanWords)
@@ -63,7 +63,7 @@ func main() {
 			wCnt++
 		}
 		file.Seek(0, 0)
-		fmt.Println(wCnt)
+		fmt.Printf("word >> %d\n", wCnt)
 	}
 
 	if flagChar {
@@ -74,6 +74,8 @@ func main() {
 			cCnt++
 		}
 		file.Seek(0, 0)
-		fmt.Println(cCnt)
+		fmt.Printf("char >> %d\n", cCnt)
 	}
+
+	fmt.Println(fName)
 }
