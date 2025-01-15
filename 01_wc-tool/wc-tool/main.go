@@ -27,7 +27,8 @@ func main() {
 		log.Fatalln("failed to open file:", err)
 	}
 
-	if flagByte || flag.NFlag() == 0 {
+	fCnt := flag.NFlag()
+	if flagByte || fCnt == 0 {
 		fBytes, err := io.ReadAll(file)
 		if err != nil {
 			log.Fatalln("failed to read file:", err)
@@ -36,7 +37,7 @@ func main() {
 		fmt.Printf("byte >> %d\n", len(fBytes))
 	}
 
-	if flagLine || flag.NFlag() == 0 {
+	if flagLine || fCnt == 0 {
 		buf := make([]byte, 32*1024)
 		lCnt := 0
 		lSep := []byte{'\n'}
@@ -55,7 +56,7 @@ func main() {
 		fmt.Printf("line >> %d\n", lCnt)
 	}
 
-	if flagWord || flag.NFlag() == 0 {
+	if flagWord || fCnt == 0 {
 		wCnt := 0
 		scanner := bufio.NewScanner(file)
 		scanner.Split(bufio.ScanWords)
