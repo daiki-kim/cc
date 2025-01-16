@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"io/fs"
 	"log"
 	"os"
 )
@@ -18,14 +19,28 @@ func main() {
 	flag.BoolVar(&flagChar, "m", false, "print character count of file contents")
 	flag.Parse()
 
+	var (
+		file *os.File
+		err  error
+	)
 	fName := flag.Arg(0)
+
 	if fName == "" {
-		log.Fatalln("need file name")
+		file = os.Stdin
+		fStat, err := file.Stat()
+		if err != nil {
+			log.Fatalln("failed to get file stat:", err)
+		}
+		if fStat.Mode()&fs.ModeNamedPipe == 0 {
+			log.Fatalln("no file")
+		}
+	} else {
+		file, err = os.Open(fName)
+		if err != nil {
+			log.Fatalln("failed to open file:", err)
+		}
 	}
-	file, err := os.Open(fName)
-	if err != nil {
-		log.Fatalln("failed to open file:", err)
-	}
+	defer file.Close()
 
 	fCnt := flag.NFlag()
 	if flagByte || fCnt == 0 {
